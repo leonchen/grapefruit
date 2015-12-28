@@ -19,6 +19,13 @@
   "dependencies": {
     "bluebird": "^3.1.1",
     "co": "^4.6.0",
-    "koa": "^1.1.2"
+    "koa": "^1.1.2",
+    "koa-body": "^1.4.0",
+    "koa-json": "^1.1.1",
+    "koa-router": "^5.3.0",
+    "pluralize": "^1.2.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0"
   }
 }

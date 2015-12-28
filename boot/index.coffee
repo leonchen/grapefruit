@@ -1,25 +1,29 @@
 Promise = require 'bluebird'
-path = Promise.promisifyAll(require 'path')
+pm = Promise.promisifyAll(require 'path')
 fs = Promise.promisifyAll(require 'fs')
 
-global.$ = {}
-global.ROOT_PATH = path.join __dirname, ".."
+Route = require './route'
 
-loadModule = global.loadModule = (p) ->
-  try
-    dir = path.join ROOT_PATH, p
-    stat = fs.lstatSync dir
-    if stat.isDirectory()
-      files = fs.readdirSync dir
-      for f in files
-        loadModule path.join(p, f)
-    else
-      for k, m of require(dir)
-        throw "#{k} has already been loaded" if $[k]?
-        $[k] = m
-  catch e
-    throw e
+global.ROOT_PATH = pm.join __dirname, ".."
+INCLUDE_FILES = /\.(coffee|js)$/
+
+global.include = (p, cb) ->
+  path = pm.join ROOT_PATH, p
+  stat = fs.lstatSync path
+  if stat.isDirectory()
+    files = fs.readdirSync path
+    for f in files
+      continue unless f.match INCLUDE_FILES
+      include pm.join(p, f), cb
+  else
+    m = require(path)
+    return cb(m) if cb
+    for k, v of m
+      throw "#{k} has already been loaded" if global[k]?
+      global[k] = v
 
 module.exports = (app) ->
-  loadModule 'controllers'
-  loadModule 'models'
+  include 'lib'
+  include 'app/models'
+
+  app.router = Route
