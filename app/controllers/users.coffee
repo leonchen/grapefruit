@@ -2,7 +2,6 @@ UsersController =
   resource: "users"
 
   list: (ctx, next) ->
-    console.log User
     ctx.body = User.all()
 
   show: (ctx, next) ->
